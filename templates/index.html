@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>CUIP: Smart Corridor Object Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+</head>
+
+<body>
+  <p id="routes" style="display: None">{{routes}}</p>
+
+  <center>
+    <div class="ui center aligned segment">
+      <div class="ui center aligned stackable grid" id="grid">
+      </div>
+    </div>
+  </center>
+
+  <script>
+    routes = JSON.parse(document.getElementById("routes").innerText)
+    console.log(routes)
+    for (var route in routes) {
+      document.getElementById("grid").innerHTML += "<div class='ui column' id='" + route + "'></div>"
+      document.getElementById(route).innerHTML = "<div class='ui button' onclick='location.href=" + '"' + routes[route] + '"' + "'>" + route + "</div>"
+    }
+    // console.log(auths)
+  </script>
+</body>
+
+</html>
