@@ -1,6 +1,5 @@
 """Manages the stream of some URL-based camera"""
 import time
-import traceback
 
 import cv2
 
@@ -10,7 +9,6 @@ class CaptureProcessor:
     Args:
         capture_url (str): The url to open with OpenCV to fetch the stream from
         cam_id (str): The ID of the camera - should be unique, used for identification later
-        anonymous (bool): Whether or not the video feed should be anonymized
         queue (multiprocessing.Queue, torch.multiprocessing.Queue): Used for message passing
     """
 

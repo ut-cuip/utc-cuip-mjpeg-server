@@ -5,26 +5,25 @@ import multiprocessing
 import cv2
 import yaml
 from capture_server import CaptureProcessor
-from quart_server import QuartServer
+from flask_server import FlaskServer
 
 
 def main(config):
     multiprocessing.set_start_method("spawn", force=True)
 
     # Create a dict of queues: key = cam_id, val = queue
-    queues = {x["camera_id"]: multiprocessing.Queue(10) for x in config["cameras"]}
-    # Create the quart server to run on port 3030
-    quart_server = QuartServer(3030, config["cameras"], queues)
+    queue = multiprocessing.Queue(len(config["cameras"]))
+    # Create the server to run on port 3030
+    flask_server = FlaskServer(3030, queue)
     # Generate cap processor for each of the entries in config.yaml
     cap_processors = [
-        CaptureProcessor(x["url"], x["camera_id"], queues[x["camera_id"]])
-        for x in config["cameras"]
+        CaptureProcessor(x["url"], x["camera_id"], queue) for x in config["cameras"]
     ]
     # Append each cap process's start method to the processes list
     processes = []
     for processor in cap_processors:
         processes.append(multiprocessing.Process(target=processor.start))
-    processes.append(multiprocessing.Process(target=quart_server.start))
+    processes.append(multiprocessing.Process(target=flask_server.start))
 
     try:
         for process in processes:
