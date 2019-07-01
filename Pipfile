@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-quart = "*"
 opencv-python = "*"
 pyyaml = "*"
+flask-opencv-streamer = "*"
 
 [dev-packages]
 black = "==19.3b0"
@@ -14,7 +14,7 @@ pylint = "*"
 rope = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.6.5"
 
 [pipenv]
 allow_prereleases = true
