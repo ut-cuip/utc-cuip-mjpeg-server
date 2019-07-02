@@ -13,7 +13,7 @@
 
   <center>
     <div class="ui center aligned segment">
-      <div class="ui center aligned stackable grid">
+      <div class="ui center aligned four wide stackable grid">
         <div class="ui row" id="grid"></div>
       </div>
     </div>
@@ -23,14 +23,14 @@
     colors = ["red", "orange", "yellow", "olive", "green", "teal", "blue", "violet", "purple", "pink"]
     routes = JSON.parse(document.getElementById("routes").innerText)
     for (var route in routes) {
+      var parent = document.createElement("a");
+      parent.href = routes[route];
       var el = document.createElement("div");
       el.className = "ui " + colors[route % colors.length] + " button";
       el.innerHTML = routes[route];
       el.style = "margin-top: 1em;"
-      el.addEventListener("click", () => {
-        location.href = routes[route];
-      });
-      document.getElementById("grid").appendChild(el);
+      parent.appendChild(el);
+      document.getElementById("grid").appendChild(parent);
     }
   </script>
 </body>
