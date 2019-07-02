@@ -2,7 +2,8 @@ import time
 from threading import Thread
 
 import cv2
-from flask import Flask, Response, abort, request
+from flask import Flask, Response, abort, request, render_template
+import json
 
 
 class FlaskServer:
@@ -17,6 +18,12 @@ class FlaskServer:
 
     def start(self):
         gen_function = self.gen
+
+        @self.flask.route("/")
+        def index():
+            return render_template(
+                "index.html", routes=json.dumps(list(self.workers.keys()))
+            )
 
         @self.flask.route("/<endpoint>")
         def video_feed(endpoint):
