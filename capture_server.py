@@ -37,7 +37,7 @@ class CaptureProcessor:
                     print("{} is getting {}FPS".format(self.camera_id, frames))
                     frames = 0
                     last_fps = time.time()
-                self.queue.put((self.camera_id, frame), block=True)
+                self.queue.put(frame, block=True)
                 del frame
                 time.sleep(max((1 / 30) - (time.time() - start), 0))
             time.sleep(10)

@@ -12,18 +12,20 @@ def main(config):
     multiprocessing.set_start_method("spawn", force=True)
 
     # Create a dict of queues: key = cam_id, val = queue
-    queue = multiprocessing.Queue(len(config["cameras"]))
+    queues = {x["camera_id"]: multiprocessing.Queue(1) for x in config["cameras"]}
     # Create the server to run on port 3030
-    flask_server = FlaskServer(3030, queue)
+    flask_server = FlaskServer(3030, queues, config)
     # Generate cap processor for each of the entries in config.yaml
     cap_processors = [
-        CaptureProcessor(x["url"], x["camera_id"], queue) for x in config["cameras"]
+        CaptureProcessor(x["url"], x["camera_id"], queues[x["camera_id"]])
+        for x in config["cameras"]
     ]
     # Append each cap process's start method to the processes list
     processes = []
     for processor in cap_processors:
         processes.append(multiprocessing.Process(target=processor.start))
-    processes.append(multiprocessing.Process(target=flask_server.start))
+
+    flask_server.start()
 
     try:
         for process in processes:

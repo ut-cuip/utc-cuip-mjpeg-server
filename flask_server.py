@@ -6,15 +6,14 @@ from flask import Flask, Response, abort, request
 
 
 class FlaskServer:
-    def __init__(self, port, queue):
+    def __init__(self, port, queues, config):
         self.port = port
         self.flask = Flask("MJPEG Server")
-        self.queue = queue
+        self.queues = queues
         self.frames = {}
         self.thread = None
-
-    def update_frame(cam_id, frame):
-        """Updates the frame for the given cam_id"""
+        self.workers = {}
+        self.config = config
 
     def start(self):
         gen_function = self.gen
@@ -40,9 +39,17 @@ class FlaskServer:
                 "threaded": True,
             },
         )
+        for x in self.config["cameras"]:
+            self.workers[x["camera_id"]] = Thread(
+                daemon=True, target=self.update_frames, args=(x["camera_id"],)
+            )
+        for cam_id in self.workers:
+            self.workers[cam_id].start()
         self.thread.start()
+
+    def update_frames(self, cam_id):
         while True:
-            cam_id, frame = self.queue.get(block=True)
+            frame = self.queues[cam_id].get(block=True)
             self.frames[cam_id] = frame
             # We don't sleep here because we rely on sleeping on the capture end
 
@@ -75,13 +82,15 @@ class FlaskServer:
 
     def __getstate__(self):
         """An override for loading this object's state from pickle"""
-        ret = {"port": self.port, "queue": self.queue}
+        ret = {"port": self.port, "queues": self.queues, "config": self.config}
         return ret
 
     def __setstate__(self, dict_in):
         """An override for pickling this object's state"""
         self.port = dict_in["port"]
         self.flask = Flask("MJPEG Server")
-        self.queue = dict_in["queue"]
+        self.queues = dict_in["queues"]
         self.frames = {}
         self.thread = None
+        self.workers = {}
+        self.config = dict_in["config"]
