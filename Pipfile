@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 opencv-python = "*"
 pyyaml = "*"
-flask-opencv-streamer = "*"
+flask = "*"
 
 [dev-packages]
 black = "==19.3b0"
